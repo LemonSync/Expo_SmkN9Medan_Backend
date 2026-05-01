@@ -8,7 +8,7 @@ router.post("/", async (req, res) => {
   if (!customer_name || !customer_phone || !order_items) {
     return res.status(400).json({
       success: false,
-      message: "Data tidak lengkap (Nama, NoHP, atau Item kosong).",
+      message: "Data tidak lengkap (Nama, No_HP, atau Item kosong).",
     });
   }
 
