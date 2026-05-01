@@ -22,14 +22,17 @@ const sessionStore = new MySQLStore({}, pool);
 // 3. CORS Configuration
 // Sesuaikan origin dengan URL frontend Vercel lo nanti
 app.use(cors({
-    // Ganti dengan URL frontend asli lo (tanpa slash di akhir)
-    origin: ["https://project-frontend-lo.vercel.app", "http://localhost:5173"], 
+    origin: [
+      "http://localhost:5173", // Port default Vite
+      "http://localhost:3000", // Jika lo pakai port lain
+      "http://127.0.0.1:5173"  // Kadang browser baca IP, bukan 'localhost'
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// Tambahkan middleware ini sebelum Routes
+// WAJIB: Tangani Preflight request
 app.options("*", cors());
 
 app.use(express.json());
