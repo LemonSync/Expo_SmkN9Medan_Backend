@@ -6,6 +6,7 @@ const pool = require('../db/connection');
 const apiRoutes = require('../routes/apiGame');
 const checkOutRoutes = require("../routes/checkOut");
 const getTransaksi = require("../routes/getTransaksi");
+const guestBook = require("../routes/guestBook");
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.get("/", (req, res) => {
 app.use('/api/game', apiRoutes);
 app.use("/api/ecommerce/checkout", checkOutRoutes);
 app.use("/api/ecommerce/get-transaksi", getTransaksi);
+app.use("/api/ecommerce/guest-book", guestBook);
 
 // REPAIR: 404 Handler tanpa string path '*' atau '(.*)'
 app.use((req, res) => {
