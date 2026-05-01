@@ -3,7 +3,7 @@ const cors = require("cors");
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 
-// Import pool database lo dari config
+// Import pool database
 const pool = require('../db/connection'); 
 
 // Import Routes
@@ -13,27 +13,44 @@ const getTransaksi = require("../routes/getTransaksi");
 
 const app = express();
 
-// 1. Trust Proxy (Wajib buat Vercel agar cookie session bisa lewat)
+// 1. Trust Proxy (Wajib buat Vercel agar cookie session bisa lewat via HTTPS)
 app.set('trust proxy', 1);
 
 // 2. Konfigurasi MySQL Store untuk Session
-const sessionStore = new MySQLStore({}, pool);
+// Menambahkan createDatabaseTable: true agar otomatis buat tabel 'sessions' jika belum ada
+const sessionStore = new MySQLStore({
+    createDatabaseTable: true,
+    schema: {
+        tableName: 'sessions'
+    }
+}, pool);
 
 // 3. CORS Configuration
-// Sesuaikan origin dengan URL frontend Vercel lo nanti
+// Menambahkan origin localhost dan handle preflight secara global
+const allowedOrigins = [
+    "http://localhost:5173", 
+    "http://localhost:3000", 
+    "http://127.0.0.1:5173",
+    "https://lemon-expo-frontend.vercel.app" // Ganti dengan URL frontend Vercel lo
+];
+
 app.use(cors({
-    origin: [
-      "http://localhost:5173", // Port default Vite
-      "http://localhost:3000", // Jika lo pakai port lain
-      "http://127.0.0.1:5173"  // Kadang browser baca IP, bukan 'localhost'
-    ],
+    origin: function (origin, callback) {
+        // Izinkan request tanpa origin (seperti mobile apps atau curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// WAJIB: Tangani Preflight request
-app.options("*", cors());
+// FIXED: Penanganan Preflight request untuk Vercel (Ganti * jadi (.*))
+app.options("(.*)", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,13 +58,15 @@ app.use(express.urlencoded({ extended: true }));
 // 4. Session Middleware
 app.use(session({
     key: 'math_game_session',
-    secret: 'game-math-secret-key', // Ganti dengan string random di .env
+    secret: process.env.SESSION_SECRET || 'game-math-secret-key', 
     store: sessionStore, 
     resave: false,
-    saveUninitialized: false, // Set false agar tidak membuat session kosong
+    saveUninitialized: false, 
     cookie: { 
-        secure: process.env.NODE_ENV === "production", // True jika di Vercel (HTTPS)
-        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // Biar nggak kena block browser
+        // Wajib true saat di Vercel (HTTPS)
+        secure: process.env.NODE_ENV === "production", 
+        // Wajib 'none' jika frontend dan backend beda domain (Cross-site)
+        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', 
         maxAge: 1000 * 60 * 60 * 24 // 1 hari
     }
 }));
@@ -61,12 +80,12 @@ app.use('/api/game', apiRoutes);
 app.use("/api/ecommerce/checkout", checkOutRoutes);
 app.use("/api/ecommerce/get-transaksi", getTransaksi);
 
-// 404 Handler
+// FIXED: 404 Handler (Ganti * jadi (.*) atau biarkan tanpa path)
 app.use((req, res) => {
     res.status(404).json({ success: false, message: "Endpoint tidak ditemukan" });
 });
 
-// Port handler (Vercel biasanya pakai process.env.PORT)
+// Port handler (Vercel menggunakan process.env.PORT secara internal)
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
