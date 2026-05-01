@@ -22,9 +22,15 @@ const sessionStore = new MySQLStore({}, pool);
 // 3. CORS Configuration
 // Sesuaikan origin dengan URL frontend Vercel lo nanti
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173", 
-    credentials: true // Wajib true agar session cookie bisa terkirim/diterima
+    // Ganti dengan URL frontend asli lo (tanpa slash di akhir)
+    origin: ["https://project-frontend-lo.vercel.app", "http://localhost:5173"], 
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Tambahkan middleware ini sebelum Routes
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
