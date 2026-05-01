@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/app.js",
-      "use": "@vercel/node"
+      "source": "/api/(.*)",
+      "destination": "/api/app.js"
     }
   ]
 }
