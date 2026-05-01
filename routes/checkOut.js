@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Pesanan berhasil dicatat ke database!",
+      message: "Pesanan berhasil disimpan ke database!",
       orderId: result.insertId,
     });
   } catch (error) {
