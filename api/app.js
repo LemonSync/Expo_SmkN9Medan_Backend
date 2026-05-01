@@ -5,13 +5,7 @@ const getTransaksi = require("../routes/getTransaksi");
 const app = express();
 const PORT = 5000; 
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    credentials: true,
-  }),
-);
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
