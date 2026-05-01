@@ -3,7 +3,7 @@ const cors = require("cors");
 const checkOutRoutes = require("../routes/checkOut");
 const getTransaksi = require("../routes/getTransaksi");
 const session = require('express-session');
-const apiRoutes = require('./routes/api');
+const apiRoutes = require('./routes/apiGame');
 const app = express();
 const PORT = 5000; 
 
