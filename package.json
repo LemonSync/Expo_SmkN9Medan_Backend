@@ -2,9 +2,10 @@
   "name": "backend_expo",
   "version": "1.0.0",
   "description": "backend doang",
-  "main": "main.js",
+  "main": "api/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node api/app.js",
+    "dev": "nodemon api/app.js"
   },
   "author": "LemonSync/EresSimbolon",
   "license": "ISC",
