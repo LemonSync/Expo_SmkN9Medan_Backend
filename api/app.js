@@ -4,7 +4,7 @@ const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 
 // Import pool database lo dari config
-const pool = require('./config/db'); 
+const pool = require('../db/connection'); 
 
 // Import Routes
 const apiRoutes = require('../routes/apiGame');
