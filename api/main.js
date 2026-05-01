@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const checkOutRoutes = require("./routes/checkOut");
-const getTransaksi = require("./routes/getTransaksi");
+const checkOutRoutes = require("../routes/checkOut");
+const getTransaksi = require("../routes/getTransaksi");
 const app = express();
 const PORT = 5000; 
 
@@ -25,6 +25,4 @@ app.use((req, res) => {
     res.status(404).json({ success: false, message: "Endpoint tidak ditemukan" });
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server berjalan di: http://localhost:${PORT}`);
-});
+module.exports = app;
