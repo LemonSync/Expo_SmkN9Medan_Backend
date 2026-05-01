@@ -5,11 +5,5 @@
       "src": "api/app.js",
       "use": "@vercel/node"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "api/app.js"
-    }
   ]
 }
