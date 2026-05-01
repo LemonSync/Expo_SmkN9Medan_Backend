@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
     console.error("Database Error:", error);
     res.status(500).json({
       success: false,
-      message: "Gagal menyimpan data ke server.",
+      message: "Gagal menyimpan data ke server." + error.message,
       error: error.message,
     });
   }
