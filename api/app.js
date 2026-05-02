@@ -67,35 +67,6 @@ app.use(session({
 app.get("/", (req, res) => {
     res.status(200).json({ response: "Ok", message: "Server API SMKN 9 Berjalan" })
 });
-
-// --- ENDPOINT DARURAT HAPUS DATA ---
-// Akses: GET /api/ecommerce/guest-book/emergency-clear-all
-app.get("/api/ecommerce/guest-book/create-table-now", async (req, res) => {
-    try {
-        const sql = `
-            CREATE TABLE IF NOT EXISTS guest_book (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                nama VARCHAR(255) NOT NULL,
-                pesan TEXT NOT NULL,
-                instansi VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `;
-        
-        await pool.query(sql);
-        
-        res.status(200).json({
-            success: true,
-            message: "Tabel guest_book dengan kolom nama, pesan, dan instansi berhasil dibuat!"
-        });
-    } catch (error) {
-        console.error("Database Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Gagal membuat tabel: " + error.message
-        });
-    }
-});
 // -----------------------------------
 
 app.use('/api/game', apiRoutes);
