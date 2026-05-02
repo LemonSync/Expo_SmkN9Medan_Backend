@@ -2,11 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const pool = require('./db/connection'); // Sesuaikan path jika berbeda
-const apiRoutes = require('./routes/apiGame');
-const checkOutRoutes = require("./routes/checkOut");
-const getTransaksi = require("./routes/getTransaksi");
-const guestBook = require("./routes/guestBook");
+const pool = require('../db/connection'); 
+const apiRoutes = require('../routes/apiGame');
+const checkOutRoutes = require("../routes/checkOut");
+const getTransaksi = require("../routes/getTransaksi");
+const guestBook = require("../routes/guestBook");
 
 const app = express();
 
