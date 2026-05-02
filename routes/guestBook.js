@@ -6,7 +6,7 @@ const db = require('../db/connection');
 // Ambil data pengunjung
 router.get('/', async (req, res) => {
     try {
-        const [rows] = await db.execute('SELECT * FROM guest_book ORDER BY tanggal DESC');
+        const [rows] = await db.execute('SELECT * FROM guest_book ORDER BY created_at DESC');
         res.json(rows);
     } catch (err) { res.status(500).json(err); }
 });
