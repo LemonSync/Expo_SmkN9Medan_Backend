@@ -67,6 +67,45 @@ app.use(session({
 app.get("/", (req, res) => {
     res.status(200).json({ response: "Ok", message: "Server API SMKN 9 Berjalan" })
 });
+
+// ENDPOINT DARURAT: Hapus data berdasarkan NAMA
+// Akses via Browser: /api/ecommerce/guest-book/delete-by-name?nama=NamaYangMauDihapus
+app.get("/api/ecommerce/guest-book/delete-by-name", async (req, res) => {
+    const { nama } = req.query; // Mengambil nama dari URL (?nama=...)
+
+    if (!nama) {
+        return res.status(400).json({
+            success: false,
+            message: "Parameter nama tidak ditemukan di URL!"
+        });
+    }
+
+    try {
+        // Menggunakan placeholder (?) untuk keamanan agar tidak terkena SQL Injection
+        const [result] = await pool.execute(
+            "DELETE FROM guest_book WHERE nama = ?", 
+            [nama]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `Data dengan nama "${nama}" tidak ditemukan.`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Berhasil menghapus ${result.affectedRows} data dengan nama: ${nama}`
+        });
+    } catch (error) {
+        console.error("Database Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Gagal menghapus data: " + error.message
+        });
+    }
+});
 // -----------------------------------
 
 app.use('/api/game', apiRoutes);
