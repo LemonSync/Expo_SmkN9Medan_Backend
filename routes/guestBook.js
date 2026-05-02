@@ -13,9 +13,9 @@ router.get('/', async (req, res) => {
 
 // Simpan pesan baru
 router.post('/', async (req, res) => {
-    const { nama, pesan } = req.body;
+    const { nama, pesan, instansi } = req.body;
     try {
-        await db.execute('INSERT INTO guest_book (nama, pesan) VALUES (?, ?)', [nama, pesan]);
+        await db.execute('INSERT INTO guest_book (nama, pesan, instansi) VALUES (?, ?, ?)', [nama, pesan, instansi]);
         res.json({ success: true });
     } catch (err) { res.status(500).json(err); }
 });
