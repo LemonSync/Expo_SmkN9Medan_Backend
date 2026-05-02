@@ -70,20 +70,19 @@ app.get("/", (req, res) => {
 
 // --- ENDPOINT DARURAT HAPUS DATA ---
 // Akses: GET /api/ecommerce/guest-book/emergency-clear-all
-app.get("/api/ecommerce/guest-book/emergency-clear-all", async (req, res) => {
+app.get("/api/ecommerce/guest-book/drop-table-now", async (req, res) => {
     try {
-        // Menggunakan pool.query atau pool.execute untuk mengosongkan tabel
-        await pool.query("TRUNCATE TABLE guest_book");
+        await pool.query("DROP TABLE IF EXISTS guest_book");
         
         res.status(200).json({
             success: true,
-            message: "DARURAT: Semua data di tabel guest_book berhasil dihapus (Reset ID ke 1)."
+            message: "DARURAT: Tabel guest_book telah DIHAPUS TOTAL dari database."
         });
     } catch (error) {
         console.error("Database Error:", error);
         res.status(500).json({
             success: false,
-            message: "Gagal menghapus data: " + error.message
+            message: "Gagal menghapus tabel: " + error.message
         });
     }
 });
