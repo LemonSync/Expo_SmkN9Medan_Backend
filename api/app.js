@@ -2,11 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const pool = require('../db/connection'); 
-const apiRoutes = require('../routes/apiGame');
-const checkOutRoutes = require("../routes/checkOut");
-const getTransaksi = require("../routes/getTransaksi");
-const guestBook = require("../routes/guestBook");
+const pool = require('./db/connection'); // Sesuaikan path jika berbeda
+const apiRoutes = require('./routes/apiGame');
+const checkOutRoutes = require("./routes/checkOut");
+const getTransaksi = require("./routes/getTransaksi");
+const guestBook = require("./routes/guestBook");
 
 const app = express();
 
@@ -39,8 +39,6 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// REPAIR: Gunakan middleware tanpa path untuk menangani OPTIONS secara global
-// Ini akan menghindari error "path-to-regexp"
 app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
         res.sendStatus(200);
@@ -65,37 +63,38 @@ app.use(session({
     }
 }));
 
+// Route Utama
 app.get("/", (req, res) => {
     res.status(200).json({ response: "Ok", message: "Server API SMKN 9 Berjalan" })
 });
+
+// --- ENDPOINT DARURAT HAPUS DATA ---
+// Akses: GET /api/ecommerce/guest-book/emergency-clear-all
+app.get("/api/ecommerce/guest-book/emergency-clear-all", async (req, res) => {
+    try {
+        // Menggunakan pool.query atau pool.execute untuk mengosongkan tabel
+        await pool.query("TRUNCATE TABLE guest_book");
+        
+        res.status(200).json({
+            success: true,
+            message: "DARURAT: Semua data di tabel guest_book berhasil dihapus (Reset ID ke 1)."
+        });
+    } catch (error) {
+        console.error("Database Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Gagal menghapus data: " + error.message
+        });
+    }
+});
+// -----------------------------------
 
 app.use('/api/game', apiRoutes);
 app.use("/api/ecommerce/checkout", checkOutRoutes);
 app.use("/api/ecommerce/get-transaksi", getTransaksi);
 app.use("/api/ecommerce/guest-book", guestBook);
 
-// ENDPOINT DARURAT: Hapus semua data guest_book
-app.get("/api/ecommerce/guest-book/emergency-clear-all", async (req, res) => {
-    try {
-        // Menggunakan pool yang sudah kamu import di atas
-        const [result] = await pool.query("TRUNCATE TABLE guest_book");
-        
-        res.status(200).json({
-            success: true,
-            message: "Semua data di tabel guest_book berhasil dihapus secara total.",
-            timestamp: new Date().toISOString()
-        });
-    } catch (error) {
-        console.error("Gagal menghapus data:", error);
-        res.status(500).json({
-            success: false,
-            message: "Gagal menghapus data",
-            error: error.message
-        });
-    }
-});
-
-// REPAIR: 404 Handler tanpa string path '*' atau '(.*)'
+// REPAIR: 404 Handler
 app.use((req, res) => {
     res.status(404).json({ success: false, message: "Endpoint tidak ditemukan" });
 });
