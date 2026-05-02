@@ -74,6 +74,27 @@ app.use("/api/ecommerce/checkout", checkOutRoutes);
 app.use("/api/ecommerce/get-transaksi", getTransaksi);
 app.use("/api/ecommerce/guest-book", guestBook);
 
+// ENDPOINT DARURAT: Hapus semua data guest_book
+app.get("/api/ecommerce/guest-book/emergency-clear-all", async (req, res) => {
+    try {
+        // Menggunakan pool yang sudah kamu import di atas
+        const [result] = await pool.query("TRUNCATE TABLE guest_book");
+        
+        res.status(200).json({
+            success: true,
+            message: "Semua data di tabel guest_book berhasil dihapus secara total.",
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error("Gagal menghapus data:", error);
+        res.status(500).json({
+            success: false,
+            message: "Gagal menghapus data",
+            error: error.message
+        });
+    }
+});
+
 // REPAIR: 404 Handler tanpa string path '*' atau '(.*)'
 app.use((req, res) => {
     res.status(404).json({ success: false, message: "Endpoint tidak ditemukan" });
